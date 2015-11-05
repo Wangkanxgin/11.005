@@ -1,0 +1,3 @@
+/Users/ydz/Desktop/YKS(10.30)/Pods/MJRefresh/MJRefreshExample/MJRefreshExample/MJRefresh/MJRefresh.bundle
+/Users/ydz/Desktop/YKS(10.30)/Pods/UMengSocial/umeng_ios_social_sdk_4.2.3_arm64_custom/UMSocial_Sdk_4.2.3/UMSocialSDKResourcesNew.bundle
+/Users/ydz/Desktop/YKS(10.30)/Pods/UMengSocial/umeng_ios_social_sdk_4.2.3_arm64_custom/UMSocial_Sdk_Extra_Frameworks/TencentOpenAPI/TencentOpenApi_IOS_Bundle.bundle
