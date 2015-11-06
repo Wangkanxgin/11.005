@@ -839,8 +839,6 @@
 
 [GZBaseRequest drugCategoryListCallback:^(id responseObject, NSError *error) {
     if (error) {
-        
-        
         [self showToastMessage:@"网络加载失败"];
         return ;
     }
@@ -868,10 +866,6 @@
             [self.nameArray addObject:nameStr];
             
         }
-        
-        
-        
-        
     } else {
         [self showToastMessage:responseObject[@"msg"]];
     }
@@ -882,23 +876,17 @@
 
 //药品分类点击事件
 -(void)sectionTwoClick:(UIButton *)btn{
-    
     NSInteger a=btn.tag-777;
     
     UIStoryboard *story=[UIStoryboard storyboardWithName:@"Main" bundle:nil];
     
     YKSDrugListViewController *vc=[story instantiateViewControllerWithIdentifier:@"YKSDrugListViewController"];
     
-    
-    
     NSDictionary *dic = _drugDatas[a];
     vc.specialId = dic[@"id"];
     vc.drugListType = YKSDrugListTypeCategory;
     vc.title = dic[@"title"];
-    
     [self.navigationController pushViewController:vc animated:YES];
-
-
 }
 
 #pragma mark - UITableViewDelegate
@@ -907,12 +895,9 @@
         [YKSTools call:kServerPhone inView:self.view];
        
     }
-    
-   
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
-    
     if (section==1) {
         return 32;
     }
@@ -920,9 +905,7 @@
 }
 
 -(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section{
-
     if (section==1) {
-        
         UIView *view=[[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 32)];
         
         UIButton *btn=[UIButton buttonWithType:UIButtonTypeCustom];
@@ -938,9 +921,7 @@
         [view addSubview:btn];
         
         [btn addTarget:self action:@selector(gotoGrugListViewController) forControlEvents:UIControlEventTouchUpInside];
-        
         view.backgroundColor=[UIColor whiteColor];
-        
         return view;
     }
     return nil;
