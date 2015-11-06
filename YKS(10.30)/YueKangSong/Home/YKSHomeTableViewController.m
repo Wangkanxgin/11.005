@@ -29,6 +29,7 @@
 #import "YKSHomeTableViewCell1.h"
 #import "YKSDrugCategoryListVC.h"
 #import "YKSDrugListViewController.h"
+#import <UIButton+WebCache.h>
 
 @interface YKSHomeTableViewController () <ImagePlayerViewDelegate,UIAlertViewDelegate,UIScrollViewDelegate>
 
@@ -42,6 +43,13 @@
 
 @property (strong, nonatomic) NSDictionary *info;
 @property (assign, nonatomic) BOOL isCreat;
+
+//药品分类图片,描述,名称
+@property(nonatomic,strong) NSMutableArray *imageArray;
+
+@property(nonatomic,strong)NSMutableArray *descArray;
+
+@property(nonatomic,strong)NSMutableArray *nameArray;
 
 @property (strong, nonatomic) UIScrollView *scrollView;
 @property (strong, nonatomic) UIPageControl *pageControl;
@@ -92,6 +100,8 @@
     
     
     [self requestDrugCategoryList];
+    
+    [self requestData];
     
    
 
@@ -186,12 +196,7 @@
 - (void)viewDidAppear:(BOOL)animated {
     
     [super viewDidAppear:animated];
-    
-    
-    
-    
-    
-    
+       
     
 }
 
@@ -782,15 +787,40 @@
         
         UIButton *btn=[UIButton buttonWithType:UIButtonTypeCustom];
         
-        [btn setImage:[UIImage imageNamed:@"screenshot"] forState:UIControlStateNormal];
+        NSString *imageStr=self.imageArray[i];
+        
+        [btn sd_setImageWithURL:[NSURL URLWithString:imageStr] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"scrennshot"]];
         
         btn.frame=CGRectMake(15+i%2*(SCREEN_WIDTH/2), 10+(i/2)*56, 35, 35);
         
-        [btn addTarget:self action:@selector(sectionTwoClick:) forControlEvents:UIControlEventTouchUpInside];
-        
-        btn.tag=777+i;
         
         [cell.contentView addSubview:btn];
+        
+        UILabel *nameLable=[[UILabel alloc]initWithFrame:CGRectMake(btn.frame.origin.x+10+35, 10+btn.frame.origin.y, 40, 10)];
+        nameLable.font=[UIFont systemFontOfSize:10];
+        nameLable.text=self.nameArray[i];
+        
+        [cell.contentView addSubview:nameLable];
+        
+        UILabel *descLable=[[UILabel alloc]initWithFrame:CGRectMake(btn.frame.origin.x+10+35, nameLable.frame.origin.y+5, 81, 20)];
+        descLable.numberOfLines=0;
+        descLable.font=[UIFont systemFontOfSize:9];
+        
+        descLable.text=self.descArray[i];
+        
+        [cell.contentView addSubview:descLable];
+        
+        UIButton *btn2=[UIButton buttonWithType:UIButtonTypeCustom];
+        
+        btn2.frame=CGRectMake(i%2*SCREEN_WIDTH/2, i/2*56, SCREEN_WIDTH/2, 56);
+        
+        [btn2 addTarget:self action:@selector(sectionTwoClick:) forControlEvents:UIControlEventTouchUpInside];
+        
+        btn2.tag=777+i;
+        
+        [cell.contentView addSubview:btn2];
+
+        
 
     }
         return cell;
@@ -801,6 +831,55 @@
         return cell;
     }  
 }
+
+
+//首页数据
+
+-(void)requestData{
+
+[GZBaseRequest drugCategoryListCallback:^(id responseObject, NSError *error) {
+    if (error) {
+        
+        
+        [self showToastMessage:@"网络加载失败"];
+        return ;
+    }
+    if (ServerSuccess(responseObject)) {
+        
+        NSArray *array=responseObject[@"data"][@"categorylist"];
+        
+        self.imageArray=[NSMutableArray array];
+        
+        self.descArray=[NSMutableArray array];
+        
+        self.nameArray=[NSMutableArray array];
+        
+        for (NSDictionary *dic in array) {
+            
+            NSString *imageStr=dic[@"logo"];
+            
+            [self.imageArray addObject:imageStr];
+            
+            NSString *descStr=dic[@"dec"];
+            [self.descArray addObject:descStr];
+            
+            NSString *nameStr=dic[@"title"];
+            
+            [self.nameArray addObject:nameStr];
+            
+        }
+        
+        
+        
+        
+    } else {
+        [self showToastMessage:responseObject[@"msg"]];
+    }
+    
+}];
+}
+
+
 //药品分类点击事件
 -(void)sectionTwoClick:(UIButton *)btn{
     
