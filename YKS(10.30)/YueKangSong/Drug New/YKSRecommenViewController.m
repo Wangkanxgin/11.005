@@ -63,6 +63,8 @@
     return _addButton;
 }
 
+
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     //设置当前页面背景为白色
@@ -70,6 +72,7 @@
     //创建表头 在init方法赋值
     YKSFormViewCell *headerView = [[YKSFormViewCell alloc] initWithFormHeadFram:CGRectMake(0, 0, 320, 200) andSymptomName:self.formInformation.symptomName andSymptom:self.formInformation.symptom andSymptomInformationName:self.formInformation.symptomInformationName andSymptomInformation:self.formInformation.symptomInformation andDoctorKeepPushingName:self.formInformation.doctorKeepPushingName];
     //给表头赋值视图
+    self.
     self.tableView.tableHeaderView = headerView;
     self.tableView.tableFooterView = [[UIView alloc]init];
     [self requestSubSpecialList];
@@ -273,7 +276,7 @@
 //返回分区
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     
-    return 1;
+    return 2;
 }
 //返回row项
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -366,6 +369,7 @@
     releaseButtonView.delegate = self;
     return releaseButtonView;
 }
+
 //添加表尾视图
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
 {
@@ -376,6 +380,9 @@
     {
         YKSOneBuyCell *buyView = [[YKSOneBuyCell alloc] initWithPrice:self.totalPrice andViewFrame:CGRectMake(0, 0, self.view.bounds.size.width, 50) andButton:self.addButton];
         //返回视图
+        
+        buyView.backgroundColor=[UIColor redColor];
+        
         return buyView;
     }else
     {

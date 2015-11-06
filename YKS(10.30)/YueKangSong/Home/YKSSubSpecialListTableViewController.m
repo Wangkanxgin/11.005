@@ -82,7 +82,7 @@
 }
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
-    YKSRecommenViewController *recommenVC=[[YKSRecommenViewController alloc]init];
+    YKSRecommenViewController *recommenVC=[[YKSRecommenViewController alloc]initWithStyle:UITableViewStyleGrouped];
     YKSSubSpecialCell *cell=[tableView cellForRowAtIndexPath:indexPath];
     recommenVC.specialId = cell.subSpecial.specialId;
     recommenVC.title=@"药师推荐方案";
