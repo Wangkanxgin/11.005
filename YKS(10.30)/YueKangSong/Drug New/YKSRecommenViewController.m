@@ -26,7 +26,7 @@
 @property (nonatomic,strong) NSArray *plan;
 
 //判断展开状态
-@property (nonatomic,assign) NSInteger index;
+@property (nonatomic,strong) NSMutableArray *indexArray;
 @property (assign, nonatomic) CGFloat totalPrice;
 
 @property(nonatomic,strong)UIButton *addButton;
@@ -74,7 +74,8 @@
     self.tableView.tableFooterView = [[UIView alloc]init];
     [self requestSubSpecialList];
     //设置记录变量初值
-    self.index = -1;
+    self.indexArray = [NSMutableArray array];
+    //self.index = -1;
 }
 
 //一键加入购物车
@@ -278,7 +279,9 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 
     //当记录变量index值 == 当前点击的分区值 表示展开状态
-    if (self.index == section){
+//    if (self.index == section)
+    NSString *str = [NSString stringWithFormat:@"%ld",section];
+    if ([self.indexArray containsObject:str]){
         return self.datas.count;
     }
     //未点击按钮返回1个cell
@@ -298,7 +301,9 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {
     //当记录index值 == 当前点击的分区 表示展开状态
-    if (self.index == section) {
+//    if (self.index == section)
+    NSString *str = [NSString stringWithFormat:@"%ld",section];
+    if ([self.indexArray containsObject:str]){
         //展开返回40点高度的表尾
         return 40;
     }
@@ -310,7 +315,10 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     //相等表示点击了按钮  返回自定义的cell
-    if (self.index == indexPath.section) {
+    //if (self.index == indexPath.section)
+    NSString *str = [NSString stringWithFormat:@"%ld",indexPath.section];
+    if ([self.indexArray containsObject:str])
+    {
        //获取点击的这一行的数据并赋值到cell
         YKSPlanDisPlayCell *cell = [tableView dequeueReusableCellWithIdentifier:@"DisPlayCell"];
         if (!cell) {
@@ -341,7 +349,10 @@
     //给创建出来的每一个视图View中的按钮tag值赋值当行的分区
     releaseButtonView.clickButton.tag = section;
     //相等表示点击了
-    if (self.index == section) {
+    NSString *str = [NSString stringWithFormat:@"%ld",section];
+    //if (self.index == section)
+    if ([self.indexArray containsObject:str])
+     {
         //显示覆盖在按钮上的向上视图
         releaseButtonView.selectedImage.image = [UIImage imageNamed:@"zhankai"];
         //设置label的不可显示状态
@@ -359,7 +370,9 @@
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
 {
     //相等 表示点击了按钮
-    if (self.index == section)
+    NSString *str = [NSString stringWithFormat:@"%ld",section];
+    if ([self.indexArray containsObject:str])
+    //if (self.index == section)
     {
         YKSOneBuyCell *buyView = [[YKSOneBuyCell alloc] initWithPrice:self.totalPrice andViewFrame:CGRectMake(0, 0, self.view.bounds.size.width, 50) andButton:self.addButton];
         //返回视图
@@ -376,20 +389,30 @@
 - (void)clickButton:(UIButton *)button
 {
     //点击了
-    if (button.tag == self.index) {
-        //修改记录index值
-        self.index = -1;
-    }else
-    {
-        //未点击,让记录index与当前行相等
-        self.index = button.tag;
+//    if (button.tag == self.index) {
+//        //修改记录index值
+//        self.index = -1;
+//    }else
+//    {
+//        //未点击,让记录index与当前行相等
+//        self.index = button.tag;
+//    }
+    
+    NSString *str = [NSString stringWithFormat:@"%ld",button.tag];
+    if ([self.indexArray containsObject:str]) {
+        [self.indexArray removeObject:str];
+    }else{
+        [self.indexArray addObject:str];
     }
     //刷新cell
     [self.tableView reloadData];
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (self.index == indexPath.section) {
+    NSString *str = [NSString stringWithFormat:@"%ld",indexPath.section];
+    //if (self.index == indexPath.section)
+    if ([self.indexArray containsObject:str])
+    {
         
         UIStoryboard* mainStoryboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         YKSDrugDetailViewController *drugDetail = [mainStoryboard instantiateViewControllerWithIdentifier:@"YKSDrugDetailViewController"];

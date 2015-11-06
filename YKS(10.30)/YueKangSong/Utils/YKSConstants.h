@@ -42,8 +42,8 @@ static const CGFloat kCycleHeight = 140;
 
 #define kShowWelcome @"1.0"
 
-#define kBaseURLString @"http://api.yuekangsong.com"
-//#define kBaseURLString @"http://123.57.175.170"
+//#define kBaseURLString @"http://api.yuekangsong.com"
+#define kBaseURLString @"http://123.57.175.170"
 
 #define ClientKey @"ios_yks_client"
 
