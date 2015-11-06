@@ -21,15 +21,10 @@
 #import "YKSShoppingCartVC.h"
 #import "YKSDrugDetailViewController.h"
 
-@interface YKSRecommenViewController ()<YKSReleaseButtonCellDelegate>
-//储存每一个当前页面的所有数据
-@property (nonatomic,strong) NSArray *plan;
-
+@interface YKSRecommenViewController ()<YKSReleaseButtonCellDelegate,YKSOneBuyCellDelegate>
 //判断展开状态
 @property (nonatomic,strong) NSMutableArray *indexArray;
 @property (assign, nonatomic) CGFloat totalPrice;
-
-@property(nonatomic,strong)UIButton *addButton;
 
 
 @end
@@ -48,23 +43,6 @@
     return _formInformation;
 }
 
--(UIButton *)addButton{
-    if (!_addButton) {
-        _addButton = [UIButton buttonWithType:UIButtonTypeSystem];
-        [_addButton setTitle:@"一键加入购物车" forState:UIControlStateNormal];
-        [_addButton setTintColor:[UIColor whiteColor]];
-        //设置一键购买按钮圆角
-        _addButton.layer.cornerRadius = 6;
-        _addButton.backgroundColor = [UIColor redColor];
-        _addButton.titleLabel.textColor = [UIColor redColor];
-        [_addButton addTarget:self action:@selector(addShoppingCart) forControlEvents:UIControlEventTouchUpInside];
-        _addButton.frame = CGRectMake(240, 5, 120, 30);
-    }
-    return _addButton;
-}
-
-
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     //设置当前页面背景为白色
@@ -72,26 +50,23 @@
     //创建表头 在init方法赋值
     YKSFormViewCell *headerView = [[YKSFormViewCell alloc] initWithFormHeadFram:CGRectMake(0, 0, 320, 200) andSymptomName:self.formInformation.symptomName andSymptom:self.formInformation.symptom andSymptomInformationName:self.formInformation.symptomInformationName andSymptomInformation:self.formInformation.symptomInformation andDoctorKeepPushingName:self.formInformation.doctorKeepPushingName];
     //给表头赋值视图
-    self.
     self.tableView.tableHeaderView = headerView;
     self.tableView.tableFooterView = [[UIView alloc]init];
     [self requestSubSpecialList];
     //设置记录变量初值
     self.indexArray = [NSMutableArray array];
-    //self.index = -1;
 }
 
-//一键加入购物车
--(void)addShoppingCart{
+//一键加入购物车 代理方法
+- (void)addShopping:(UIButton *)addButton
+{
     if (self.datas.count==0) {
         [self showToastMessage:@"没有商品可以加入购物车！！！"];
         return;
     }
     
     [self jumpAddCard];
-
-
-
+    
 }
 
 - (void)jumpAddCard
@@ -106,7 +81,6 @@
         [YKSTools login:self];
         return;
     }
-    
     
     //如果列表为空,什么地址都没有,去添加地址控制器
     if (!currentAddr[@"express_mobilephone"]) {
@@ -150,7 +124,7 @@
                         return ;
                     }
                     if (ServerSuccess(responseObject)) {
-                        NSLog(@"responseObject = %@", responseObject);
+//                        NSLog(@"responseObject = %@", responseObject);
                         NSDictionary *dic = responseObject[@"data"];
                         if ([dic isKindOfClass:[NSDictionary class]] && dic[@"addresslist"]) {
                             [YKSUserModel shareInstance].addressLists = _datas;
@@ -204,7 +178,7 @@
             [gcontrasts addObject:dic];
             [gids addObject:obj[@"gid"]];
         }];
-        
+
         [GZBaseRequest addToShoppingcartParams:gcontrasts
                                           gids:[gids componentsJoinedByString:@","]
                                       callback:^(id responseObject, NSError *error) {
@@ -250,7 +224,7 @@
         return ;
     }
     if (ServerSuccess(responseObject)) {
-        NSLog(@"responseObject = %@", responseObject);
+        //获取服务器数据
         NSDictionary *dic = responseObject[@"data"];
         if ([dic isKindOfClass:[NSDictionary class]] && dic[@"glist"]) {
             _datas = responseObject[@"data"][@"glist"];
@@ -281,8 +255,7 @@
 //返回row项
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 
-    //当记录变量index值 == 当前点击的分区值 表示展开状态
-//    if (self.index == section)
+    //当记录变量数据中 包含 当前点击的分区值 表示展开状态
     NSString *str = [NSString stringWithFormat:@"%ld",section];
     if ([self.indexArray containsObject:str]){
         return self.datas.count;
@@ -303,22 +276,20 @@
 //设置分区尾的高度
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {
-    //当记录index值 == 当前点击的分区 表示展开状态
-//    if (self.index == section)
+    //当记录数组中 包含 当前点击的分区 表示展开状态
     NSString *str = [NSString stringWithFormat:@"%ld",section];
     if ([self.indexArray containsObject:str]){
         //展开返回40点高度的表尾
         return 40;
     }
     //未点击不返回高度 0有默认高度 设置为0.1
-    return 0;
+    return 0.1;
 }
 
 //添加cell单元格
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    //相等表示点击了按钮  返回自定义的cell
-    //if (self.index == indexPath.section)
+    //数组中 包含表示点击了按钮  返回自定义的cell
     NSString *str = [NSString stringWithFormat:@"%ld",indexPath.section];
     if ([self.indexArray containsObject:str])
     {
@@ -328,8 +299,6 @@
             cell = [[YKSPlanDisPlayCell alloc] init];
         }
         cell.drugInfo = self.datas[indexPath.row];
-        //单元格不可点击
-//        cell.userInteractionEnabled = NO;
         return cell;
     }else{
         //未点击按钮状态下返回的自定义cell
@@ -337,7 +306,6 @@
         if (!cell) {
             cell = [[YKSPlanCell alloc] init];
         }
-        NSLog(@"数据%@",_datas);
         cell.datas = [_datas copy];
         //单元格不可点击
         cell.userInteractionEnabled = NO;
@@ -351,9 +319,8 @@
     YKSReleaseButtonCell *releaseButtonView = [[YKSReleaseButtonCell alloc] initWithPrice:self.totalPrice andSection:@"方案一" andFrame:(CGRectMake(0, 0, self.view.bounds.size.width, 28.0f))];
     //给创建出来的每一个视图View中的按钮tag值赋值当行的分区
     releaseButtonView.clickButton.tag = section;
-    //相等表示点击了
+    //数组中 包含表示点击了
     NSString *str = [NSString stringWithFormat:@"%ld",section];
-    //if (self.index == section)
     if ([self.indexArray containsObject:str])
      {
         //显示覆盖在按钮上的向上视图
@@ -376,17 +343,14 @@
     //相等 表示点击了按钮
     NSString *str = [NSString stringWithFormat:@"%ld",section];
     if ([self.indexArray containsObject:str])
-    //if (self.index == section)
     {
-        YKSOneBuyCell *buyView = [[YKSOneBuyCell alloc] initWithPrice:self.totalPrice andViewFrame:CGRectMake(0, 0, self.view.bounds.size.width, 50) andButton:self.addButton];
+        YKSOneBuyCell *buyView = [[YKSOneBuyCell alloc] initWithPrice:self.totalPrice andViewFrame:CGRectMake(0, 0, self.view.bounds.size.width, 50)];
         //返回视图
-        
-        buyView.backgroundColor=[UIColor redColor];
-        
+        buyView.delegate = self;
         return buyView;
     }else
     {
-        //未点击返回一个空视图
+        //未展开状态返回一个空视图
         UIView *view = [[UIView alloc] initWithFrame:CGRectZero];
         return view;
     }
@@ -395,16 +359,7 @@
 //按钮点击的代理方法
 - (void)clickButton:(UIButton *)button
 {
-    //点击了
-//    if (button.tag == self.index) {
-//        //修改记录index值
-//        self.index = -1;
-//    }else
-//    {
-//        //未点击,让记录index与当前行相等
-//        self.index = button.tag;
-//    }
-    
+    //记录当前点击的按钮的tag值
     NSString *str = [NSString stringWithFormat:@"%ld",button.tag];
     if ([self.indexArray containsObject:str]) {
         [self.indexArray removeObject:str];
@@ -415,19 +370,16 @@
     [self.tableView reloadData];
 }
 
+
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     NSString *str = [NSString stringWithFormat:@"%ld",indexPath.section];
-    //if (self.index == indexPath.section)
     if ([self.indexArray containsObject:str])
     {
-        
         UIStoryboard* mainStoryboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         YKSDrugDetailViewController *drugDetail = [mainStoryboard instantiateViewControllerWithIdentifier:@"YKSDrugDetailViewController"];
         drugDetail.drugInfo = self.datas[indexPath.row];
         [self.navigationController pushViewController:drugDetail animated:YES];
     }
-    
-    
 }
 
 

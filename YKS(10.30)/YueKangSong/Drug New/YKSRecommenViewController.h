@@ -9,11 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "YKSFormInformation.h"
 
-//typedef NS_ENUM(NSInteger, YKSDrugListType1) {
-//    YKSDrugListTypeSpecail = 1, //专题
-//    YKSDrugListTypeCategory = 2, //分类id
-//    YKSDrugListTypeSearchKey = 3 //搜索key
-//};
 
 @interface YKSRecommenViewController : UITableViewController
 @property (strong, nonatomic) NSString *specialId;

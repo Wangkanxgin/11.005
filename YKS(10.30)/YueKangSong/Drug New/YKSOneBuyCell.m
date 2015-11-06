@@ -17,12 +17,20 @@
 //显示运费
 @property (nonatomic,strong) UILabel *freightLabel;
 
+
 @property(nonatomic,strong)NSArray *datas;
 
 @end
 
 @implementation YKSOneBuyCell
 #pragma mark -- get创建控件
+- (UIButton *)button
+{
+    if (!_button) {
+        _button = [UIButton buttonWithType:UIButtonTypeSystem];
+    }
+    return _button;
+}
 - (UILabel *)sum
 {
     if (!_sum) {
@@ -51,7 +59,7 @@
     return _datas;
 }
 //将传来的值赋值到控件上
-- (instancetype)initWithPrice:(float)price andViewFrame:(CGRect)frame andButton:(UIButton *)button
+- (instancetype)initWithPrice:(float)price andViewFrame:(CGRect)frame
 {
     self = [super init];
     if (self) {
@@ -67,7 +75,16 @@
         self.priceLabel.textColor = [UIColor redColor];
         [self addSubview:self.priceLabel];
         
-        
+        self.button = [UIButton buttonWithType:UIButtonTypeSystem];
+        [self.button setTitle:@"一键加入购物车" forState:UIControlStateNormal];
+        [self.button setTintColor:[UIColor whiteColor]];
+        //设置一键购买按钮圆角
+        self.button.layer.cornerRadius = 6;
+        self.button.backgroundColor = [UIColor redColor];
+        self.button.titleLabel.textColor = [UIColor redColor];
+        [self.button addTarget:self action:@selector(addShoppingCart:) forControlEvents:UIControlEventTouchUpInside];
+        self.button.frame = CGRectMake(240, 5, 120, 30);
+        [self addSubview:self.button];
         [YKSTools showFreightPriceTextByTotalPrice:price
                                           callback:^(NSAttributedString *totalPriceString,  NSString *freightPriceString) {
                                               self.priceLabel.attributedText = totalPriceString;
@@ -78,23 +95,14 @@
         self.freightLabel.font = [UIFont systemFontOfSize:12];
         [self addSubview:self.freightLabel];
         
-        
-//        self.addButton = [UIButton buttonWithType:UIButtonTypeSystem];
-//        [self.addButton setTitle:@"一键加入购物车" forState:UIControlStateNormal];
-//        [self.addButton setTintColor:[UIColor whiteColor]];
-//        //设置一键购买按钮圆角
-//        self.addButton.layer.cornerRadius = 6;
-//        self.addButton.backgroundColor = [UIColor redColor];
-//        self.addButton.titleLabel.textColor = [UIColor redColor];
-//        
-//        self.addButton.frame = CGRectMake(240, 5, 120, self.bounds.size.height - 20);
-        [self addSubview:button];
-        
     }
     return self;
 }
 
-
+- (void)addShoppingCart:(UIButton *)button
+{
+    [self.delegate addShopping:button];
+}
 
 
 
